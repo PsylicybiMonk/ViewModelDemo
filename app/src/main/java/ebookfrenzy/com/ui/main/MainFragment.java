@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import ebookfrenzy.com.R;
@@ -42,7 +43,15 @@ public class MainFragment extends Fragment {
         resultText = getView().findViewById(R.id.resultText);
         convertButton = getView().findViewById(R.id.convertButton);
 
-        resultText.setText(mViewModel.getResult().toString());
+
+        final Observer<Float> resultObserver = new Observer<Float>() {
+            @Override
+            public void onChanged(@Nullable final Float result) {
+                resultText.setText(result.toString());
+            }
+        };
+
+        mViewModel.getResult().observe(this, resultObserver);
 
         convertButton.setOnClickListener(new View.OnClickListener()
         {
@@ -50,8 +59,8 @@ public class MainFragment extends Fragment {
             public void onClick(View v) {
 
                 if(!dollarText.getText().toString().equals("")) {
-                    mViewModel.setAmount(dollarText.getText().toString());
-                    resultText.setText(mViewModel.getResult().toString());
+                    mViewModel.setAmount(Float.valueOf(
+                            dollarText.getText().toString()));
                 } else {
                     resultText.setText("No Value");
                 }
